@@ -4,7 +4,7 @@ using EventConnectService.Interfaces;
 using EventConnectService.ViewModels;
 using Microsoft.EntityFrameworkCore;
 
-namespace EventConnectService.Services;
+namespace EventConnectService.Implementations;
 
 public class EventService(EventConnectDbContext db) : IEventService
 {

@@ -7,7 +7,7 @@ Digital invitations, event management and RSVP platform. Monorepo with a React f
 - `UI/` – EventConnectUI: React 19 + Vite 8 + TypeScript SPA. Entry: `src/main.tsx` → `src/App.tsx`.
 - `API/` – .NET 10 backend, solution `API/EventConnect.slnx`, three layers (each only references the one below):
   - `EventConnectAPI/` – ASP.NET Core Web API: startup (`Program.cs`) and controllers (`Controllers/`). No business logic or EF Core queries here.
-  - `EventConnectService/` – business logic: service interfaces (`Interfaces/`), implementations (`Services/`), view models (`ViewModels/`). Controllers receive and return view models, never entities.
+  - `EventConnectService/` – business logic: service interfaces (`Interfaces/`), implementations (`Implementations/`), view models (`ViewModels/`). Controllers receive and return view models, never entities.
   - `EventConnectCore/` – EF Core `EventConnectDbContext` (`Data/`) and entity models (`Models/`). SQL Server provider.
   - Each library exposes a `DependencyInjection.cs` extension (`AddEventConnectCore`, `AddEventConnectServices`) called from `Program.cs`.
 

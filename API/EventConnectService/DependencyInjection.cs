@@ -1,5 +1,5 @@
 using EventConnectService.Interfaces;
-using EventConnectService.Services;
+using EventConnectService.Implementations;
 using Microsoft.Extensions.DependencyInjection;
 
 namespace EventConnectService;
