@@ -1,6 +1,14 @@
+using EventConnectCore;
+using EventConnectService;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+var connectionString = builder.Configuration.GetConnectionString("EventConnect")
+    ?? throw new InvalidOperationException("Connection string 'EventConnect' is not configured.");
+
+builder.Services.AddEventConnectCore(connectionString);
+builder.Services.AddEventConnectServices();
 
 builder.Services.AddControllers();
 // Learn more about configuring OpenAPI at https://aka.ms/aspnet/openapi

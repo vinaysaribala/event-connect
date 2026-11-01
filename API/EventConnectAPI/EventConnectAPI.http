@@ -1,0 +1,24 @@
+@EventConnectAPI_HostAddress = http://localhost:5207
+
+GET {{EventConnectAPI_HostAddress}}/api/events
+Accept: application/json
+
+###
+
+GET {{EventConnectAPI_HostAddress}}/api/events/1
+Accept: application/json
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/events
+Content-Type: application/json
+
+{
+  "title": "Launch party",
+  "description": "EventConnect kickoff",
+  "location": "Main hall",
+  "startsAt": "2026-12-01T18:00:00",
+  "endsAt": "2026-12-01T21:00:00"
+}
+
+###
