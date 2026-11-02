@@ -1,0 +1,80 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "api: build",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["build", "${workspaceFolder}/API/EventConnect.slnx", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
+      "group": { "kind": "build", "isDefault": true },
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "api: watch",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["watch", "run", "--project", "${workspaceFolder}/API/EventConnectAPI"],
+      "isBackground": true,
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "api: database update",
+      "type": "shell",
+      "command": "dotnet tool restore && dotnet ef database update --project EventConnectCore --startup-project EventConnectAPI",
+      "options": { "cwd": "${workspaceFolder}/API" },
+      "problemMatcher": []
+    },
+    {
+      "label": "ui: install",
+      "type": "npm",
+      "script": "install",
+      "path": "UI",
+      "problemMatcher": []
+    },
+    {
+      "label": "ui: dev",
+      "type": "npm",
+      "script": "dev",
+      "path": "UI",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "vite",
+        "pattern": { "regexp": "^__never_matches__$" },
+        "background": {
+          "activeBegin": true,
+          "beginsPattern": "VITE v",
+          "endsPattern": "Local:\\s+http"
+        }
+      }
+    },
+    {
+      "label": "ui: build",
+      "type": "npm",
+      "script": "build",
+      "path": "UI",
+      "group": "build",
+      "problemMatcher": ["$tsc"]
+    },
+    {
+      "label": "ui: lint",
+      "type": "npm",
+      "script": "lint",
+      "path": "UI",
+      "problemMatcher": []
+    },
+    {
+      "label": "ui: stop dev server",
+      "type": "shell",
+      "command": "${input:terminateUiDev}",
+      "problemMatcher": []
+    }
+  ],
+  "inputs": [
+    {
+      "id": "terminateUiDev",
+      "type": "command",
+      "command": "workbench.action.tasks.terminate",
+      "args": "ui: dev"
+    }
+  ]
+}

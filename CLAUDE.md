@@ -24,8 +24,8 @@ Run from inside each project folder.
 **API (`API/`)**
 - Build: `dotnet build EventConnect.slnx`
 - Run: `dotnet run --project EventConnectAPI` (http://localhost:5207; add `--launch-profile https` for https://localhost:7055)
-- Database: connection string `EventConnect` in `EventConnectAPI/appsettings.json` (LocalDB by default)
-- Migrations (needs `dotnet tool install --global dotnet-ef`):
+- Database: connection string `EventConnect` in `EventConnectAPI/appsettings.json` (local SQL Server Express, `localhost\SQLEXPRESS`, Windows auth)
+- Migrations (`dotnet-ef` is a local tool in `API/dotnet-tools.json`; run `dotnet tool restore` once):
   `dotnet ef migrations add <Name> --project EventConnectCore --startup-project EventConnectAPI`, then
   `dotnet ef database update --project EventConnectCore --startup-project EventConnectAPI`
 - OpenAPI document (Development only): `/openapi/v1.json`
