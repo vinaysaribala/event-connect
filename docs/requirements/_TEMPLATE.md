@@ -86,6 +86,10 @@ Checked off once verified.
 
 - <What this feature deliberately does not cover>
 
+## Decisions
+
+<!-- Answered open questions move here, with the date and a short "why". -->
+
 ## Open questions
 
 - <Anything undecided>

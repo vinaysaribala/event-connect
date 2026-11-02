@@ -88,7 +88,7 @@ Organizers register, verify their email and sign in. Every event is owned by its
 { "email": "maria@example.com", "password": "correct-horse-42" }
 ```
 
-- **200 OK** — signed in (session mechanism decided at implementation; see Open questions)
+- **200 OK** — signed in; the response sets the session cookie (see Decisions)
 
   ```json
   { "id": 7, "email": "maria@example.com", "displayName": "Maria Lopez", "emailVerified": true, "roles": ["Organizer"] }
@@ -176,9 +176,35 @@ Organizers register, verify their email and sign in. Every event is owned by its
 - **FR-003** Google/Apple sign-in.
 - **FR-011** Co-hosts (see [02](02-events.md)).
 
-## Open questions
+## Decisions
 
-- Session mechanism: secure HTTP-only cookie (simplest for a same-site SPA) or bearer tokens (JWT)? Recommendation: cookie, using ASP.NET Core Identity.
+### Sessions: server-side cookie, not tokens (decided 2026-11-02)
+
+**API**
+- ASP.NET Core Identity issues the session cookie on `POST /api/auth/login` and clears it on `POST /api/auth/logout`.
+- The cookie is `HttpOnly`, `Secure` and `SameSite=Lax`, so JavaScript can never read it.
+- Unauthenticated API requests return **401**, never a redirect to a login page. Identity's default redirect is overridden in `Program.cs`.
+
+**UI**
+- No tokens are stored in `localStorage`, `sessionStorage` or memory.
+- An `AuthProvider` context holds the current user. It calls `GET /api/me` on app load (200 = signed in, 401 = signed out), and exposes `user`, `loading`, `login()` and `logout()`.
+- One shared fetch helper treats a 401 from any request as "session ended": it clears the user and redirects to `/login?returnTo=…`.
+- Protected routes wait for `loading`, then redirect to `/login` if there's no user. Admin routes also check `roles`.
+- The guest page `/invite/:token` needs no session; the token is the credential (FR-005).
+
+**Same origin**
+- The UI calls the API with relative URLs (`/api/...`).
+- Locally, the Vite dev server proxies `/api` to `http://localhost:5207` (`server.proxy` in `UI/vite.config.ts`). The browser only sees `localhost:5173`, so no CORS setup is needed.
+- In production, the UI and API are served under one domain.
+
+**Local development notes**
+- Browsers treat `localhost` as secure, so the `Secure` cookie works over plain HTTP; the HTTPS launch profile isn't needed.
+- Cookies ignore ports. Signing in through the app at `:5173` also signs in Scalar at `:5207/scalar` in the same browser.
+- REST Client in VS Code keeps cookies between requests. Run the login request in `EventConnectAPI.http` first.
+
+**Why:** an HTTP-only cookie can't be stolen by an injected script, and the server controls expiry and sign-out. A single-origin setup avoids cross-site cookie and CORS problems. Bearer tokens (JWT) would only be needed for a mobile app, third-party API clients, or a UI on a different domain from the API.
+
+## Open questions
 - Should unverified users be blocked from more than publishing and sending (for example, after 7 days)?
 - Email provider for verification and reset emails; shared with [05](05-invitation-delivery.md).
 - Account deletion and data export (FRD §16 Privacy) are not in the FR list. Are they MVP?

@@ -50,5 +50,6 @@ Run from inside each project folder.
 - API: one controller per resource in `Controllers/`, route `api/[controller]`; nullable reference types are enabled — don't suppress warnings.
 - New feature = entity in Core (+ `DbSet` in the DbContext and a migration), view models + interface + service in Service (register in its `DependencyInjection.cs`), thin controller in API. `Events` is the reference example.
 - `System.Security.Cryptography.Pkcs` is pinned in `EventConnectCore.csproj` to override a vulnerable version pulled in by `Microsoft.Data.SqlClient`; drop the pin once SqlClient ships a fixed dependency.
-- Calling the API from the UI requires CORS in `Program.cs` or a `server.proxy` entry in `vite.config.ts` (neither is set up yet).
+- UI → API: always relative URLs (`/api/...`). In dev, Vite proxies `/api` to http://localhost:5207 (`server.proxy` in `UI/vite.config.ts`; add it when first needed). Don't add CORS; UI and API stay same-origin in production too.
+- Auth/sessions: HTTP-only cookie from ASP.NET Core Identity; API returns 401 (no login redirects). The UI never stores tokens; an `AuthProvider` context loads the user from `GET /api/me`. Full decision: `docs/requirements/01-accounts.md` → Decisions.
 - Before finishing a change, build the project(s) you touched (`npm run build` / `dotnet build EventConnect.slnx`).
