@@ -38,7 +38,7 @@ An admin area for Administrators: managing invitation templates and categories, 
   - Audit entries are append-only. Retention is an open question.
   - Support search: one search box matching user email or name, event title or id, and guest email. Results are grouped by type.
   - Admins can view an event's details and guest list read-only. Admins can't edit organizers' events in MVP.
-- **Roles:** the first Administrator is created from configuration at startup (see Open questions); after that, admins can grant or remove the Administrator role.
+- **Roles:** the first Administrator comes from configuration (`Admin:SeedEmail`, built in [01 Accounts](01-accounts.md)); after that, admins can grant or remove the Administrator role.
 
 ## Data
 
@@ -146,9 +146,14 @@ Admin area under `/admin`, only shown to Administrators, with its own navigation
 
 - **FR-043** Subscriptions, payments, receipts and entitlements (premium templates FR-016, higher limits). Needs a payment processor (FRD §15).
 
+## Decisions
+
+### First Administrator (decided 2026-11-02)
+
+- The user whose email matches `Admin:SeedEmail` gets the `Administrator` role on registration or verification. This is built in [01 Accounts](01-accounts.md).
+
 ## Open questions
 
-- How is the first Administrator created: a configured email promoted at startup (proposed), or a command-line seeding step?
 - Is there a separate **Support** role with less access than Administrator? BR-09 mentions "support roles", but the personas only list Administrator.
 - User management: the Administrator persona says "manage users", but there's no FR for it. Is disabling or deleting user accounts MVP?
 - **FRD decision:** how long are events, guest data and audit history kept?

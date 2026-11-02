@@ -1,13 +1,13 @@
 # Feature: Accounts and Access
 
-**Status:** Draft
+**Status:** Ready
 **Release:** MVP (social sign-in is Phase 2)
 **API:** Not started
 **UI:** Not started
 **Source:** [FRD §3](../functional-requirements.md#3-accounts-and-access), BR-01, BR-07, BR-09
 **Depends on:** nothing (build first)
 
-> Detail below the FRD's one-line requirements (limits, expiry times, endpoints, status codes) is proposed and needs review before Status moves to Ready.
+> Reviewed and marked Ready on 2026-11-02. The detail added beyond the FRD (limits, expiry times, endpoints, status codes) is accepted as written; see Decisions.
 
 ## Summary
 
@@ -34,9 +34,12 @@ Organizers register, verify their email and sign in. Every event is owned by its
 - **FR-004** Event-level ownership and authorization.
   - Each event has exactly one owner, the organizer who created it (BR-01).
   - Requests for an event the caller does not own return **404 Not Found**, not 403, so event ids can't be probed.
+  - This feature provides the signed-in user and roles. Applying ownership to events (the `OrganizerId` column and owner checks) is built in [02 Events](02-events.md).
   - Co-host permissions (FR-011) are Phase 2.
 - **FR-005** Token-based guest access without registration. Defined in [05](05-invitation-delivery.md) and [06](06-rsvp.md); listed here because it is part of the access model.
-- **Roles:** `Organizer` (every registered user) and `Administrator` (assigned, see [09](09-administration.md)).
+- **Roles:** `Organizer` (every registered user) and `Administrator`.
+  - The first Administrator comes from configuration: when a user registers (or verifies) with the email in `Admin:SeedEmail`, they also get the `Administrator` role. Managing roles after that is in [09](09-administration.md).
+- **Emails sent by this feature:** verification and password reset. Both are sent through one email-sending interface, so the provider can change without touching the rest of the code (see Decisions).
 
 ## Data
 
@@ -50,7 +53,8 @@ Organizers register, verify their email and sign in. Every event is owned by its
 | | TimeZone | string | IANA zone, e.g. `America/New_York` |
 | | CreatedAt / UpdatedAt | DateTime (UTC) | set by server |
 | Role | Id, Name | | `Organizer`, `Administrator` |
-| Event | OrganizerId | int | **new column**, FK → User, required |
+
+`Event.OrganizerId` is added in [02 Events](02-events.md), not here.
 
 ## API
 
@@ -166,15 +170,21 @@ Organizers register, verify their email and sign in. Every event is owned by its
 - [ ] Registering the same email again (any letter case) returns 409.
 - [ ] A verification link works once; a second use or one older than 24 hours returns 400.
 - [ ] Wrong password and unknown email both return the same 401 message.
-- [ ] Forgot-password returns 202 for both known and unknown emails.
-- [ ] An unverified user can create a draft event but gets an error when publishing.
-- [ ] User A requesting `GET /api/events/{id}` for User B's event gets 404.
-- [ ] Signed-out requests to organizer endpoints return 401.
+- [ ] Forgot-password returns 202 for both known and unknown emails; only a known email receives a reset email.
+- [ ] A reset link works once and changes the password; the old password no longer signs in.
+- [ ] Signed-out requests to `GET /api/me` and `PUT /api/me` return 401, not a redirect.
+- [ ] After login, `GET /api/me` returns the user; after logout it returns 401.
+- [ ] Registering with the `Admin:SeedEmail` address gives the user the `Administrator` role.
+- [ ] Verification and reset emails arrive in a real inbox through Gmail SMTP. With no SMTP settings, the email and its link are logged instead and the request still succeeds.
+- [ ] UI: register → verify (via the emailed link) → sign in → edit profile → sign out works end to end in the browser; protected pages redirect to `/login` when signed out; the unverified banner shows until the email is verified.
+
+Ownership checks on events (unverified users can't publish; another organizer's event returns 404) are acceptance criteria of [02 Events](02-events.md).
 
 ## Later (Phase 2)
 
 - **FR-003** Google/Apple sign-in.
 - **FR-011** Co-hosts (see [02](02-events.md)).
+- Account deletion and personal data export (FRD §16 Privacy). Deferred because they touch events, guests and RSVPs, so they're built once those exist.
 
 ## Decisions
 
@@ -204,7 +214,33 @@ Organizers register, verify their email and sign in. Every event is owned by its
 
 **Why:** an HTTP-only cookie can't be stolen by an injected script, and the server controls expiry and sign-out. A single-origin setup avoids cross-site cookie and CORS problems. Bearer tokens (JWT) would only be needed for a mobile app, third-party API clients, or a UI on a different domain from the API.
 
+### Email: Gmail SMTP for local development (decided 2026-11-02)
+
+- Emails are sent through an `IEmailSender` interface in `EventConnectService`. The first implementation sends via SMTP; a production provider can replace it later without other changes. [05](05-invitation-delivery.md) reuses it.
+- Local development uses Google's SMTP server: `smtp.gmail.com`, port 587, STARTTLS.
+  - Settings: `Email:Smtp:Host`, `Port`, `UserName`, `Password`, `FromAddress`, `FromName`.
+  - The password is a Google **App Password** (the Google account needs 2-Step Verification), not the account's normal password.
+  - The user name, password and from-address are kept in **.NET user secrets** (`dotnet user-secrets` on the `EventConnectAPI` project), never in `appsettings*.json` or git. `appsettings.json` holds only host, port and from-name.
+- If the SMTP settings are missing, the email (with its link) is written to the API log instead, so the app still runs for anyone who hasn't set up Gmail.
+- Links in emails point at the UI (`App:BaseUrl`, `http://localhost:5173` in Development).
+- Gmail limits sending to roughly 500 recipients a day, which is fine for development. Production needs a transactional email provider; to be chosen before launch ([05](05-invitation-delivery.md)).
+
+### Unverified users (decided 2026-11-02)
+
+- No limits beyond "can't publish events or send invitations". Add more only if abuse appears.
+
+### Scope boundary with Events (decided 2026-11-02)
+
+- This feature builds accounts, sessions, roles and profile only. The existing Events API is left unchanged; making events owned and sign-in-only is done in [02 Events](02-events.md).
+
+### First Administrator (decided 2026-11-02)
+
+- Set by configuration: `Admin:SeedEmail` in `appsettings.Development.json` (or user secrets). That user gets the `Administrator` role on registration or verification. Also recorded in [09](09-administration.md).
+
+### Account deletion and data export (decided 2026-11-02)
+
+- Not in this feature; moved to Later (Phase 2).
+
 ## Open questions
-- Should unverified users be blocked from more than publishing and sending (for example, after 7 days)?
-- Email provider for verification and reset emails; shared with [05](05-invitation-delivery.md).
-- Account deletion and data export (FRD §16 Privacy) are not in the FR list. Are they MVP?
+
+None. All questions are answered under Decisions.

@@ -8,7 +8,7 @@ Listed in build order: each feature depends only on the ones above it.
 
 | # | Feature | FRD | Release | Status | API | UI |
 |---|---|---|---|---|---|---|
-| 01 | [Accounts and Access](01-accounts.md) | §3 · FR-001–005 | MVP | Draft | Not started | Not started |
+| 01 | [Accounts and Access](01-accounts.md) | §3 · FR-001–005 | MVP | **Ready** | Not started | Not started |
 | 02 | [Event Lifecycle](02-events.md) | §4 · FR-006–011 | MVP | Draft | Partial | Not started |
 | 03 | [Invitation Design](03-invitation-design.md) | §5 · FR-012–016 | MVP | Draft | Not started | Not started |
 | 04 | [Guest Lists](04-guest-lists.md) | §6 · FR-017–021 | MVP | Draft | Not started | Not started |
@@ -26,7 +26,7 @@ Phase 2 requirements are listed in each file under **Later (Phase 2)** and are n
 
 ## Before building
 
-Every file is **Draft**. The FRD gives one line per requirement. The detail added here (field limits, expiry times, endpoint shapes, status codes) is proposed and needs a review. For each file:
+Files start as **Draft**. The FRD gives one line per requirement. The detail added here (field limits, expiry times, endpoint shapes, status codes) is proposed and needs a review. For each file:
 
 1. Read it, and correct anything that's wrong.
 2. Answer its **Open questions**. Those marked **FRD decision** come from FRD §18.
