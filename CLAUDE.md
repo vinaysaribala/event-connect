@@ -37,6 +37,7 @@ Run from inside each project folder.
 - Migrations (`dotnet-ef` is a local tool in `API/dotnet-tools.json`; run `dotnet tool restore` once):
   `dotnet ef migrations add <Name> --project EventConnectCore --startup-project EventConnectAPI`, then
   `dotnet ef database update --project EventConnectCore --startup-project EventConnectAPI`
+- API reference and try-it UI (Scalar, Development only): http://localhost:5207/scalar
 - OpenAPI document (Development only): `/openapi/v1.json`
 - Sample requests: `EventConnectAPI/EventConnectAPI.http`
 

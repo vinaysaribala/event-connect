@@ -38,6 +38,8 @@ Entity `Event` in `EventConnectCore/Models/Event.cs`, table `Events`.
 
 ## API
 
+Try these at http://localhost:5207/scalar while the API is running.
+
 ### `GET /api/events` — list events
 
 Responses:

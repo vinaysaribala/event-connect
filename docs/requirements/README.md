@@ -15,6 +15,10 @@ One file per feature. Each describes what the feature does (user stories, number
 3. Add a row to the table above.
 4. Set **Status** to Ready and ask: *"Implement docs/requirements/NN-feature-name.md"*.
 
+## Trying the API
+
+With the API running in Development (`dotnet run --project EventConnectAPI` in `API/`, or **API: Debug (.NET)** in VS Code), open http://localhost:5207/scalar. Scalar lists every endpoint with its request and response shapes, and lets you send requests from the browser. Use it to check an implemented feature against the samples in its requirements file. The same samples are also in `API/EventConnectAPI/EventConnectAPI.http`.
+
 ## How a requirements file maps to the code
 
 | Section | Becomes |
