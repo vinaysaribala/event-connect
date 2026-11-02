@@ -11,6 +11,15 @@ Digital invitations, event management and RSVP platform. Monorepo with a React f
   - `EventConnectCore/` – EF Core `EventConnectDbContext` (`Data/`) and entity models (`Models/`). SQL Server provider.
   - Each library exposes a `DependencyInjection.cs` extension (`AddEventConnectCore`, `AddEventConnectServices`) called from `Program.cs`.
 
+## Requirements
+
+Feature requirements live in `docs/requirements/` (index: `README.md`, template: `_TEMPLATE.md`). When implementing a feature:
+
+- Read its requirements file first and build exactly what it specifies; ask about anything marked TBD or listed under Open questions rather than guessing.
+- Match the API request/response samples exactly (field names, status codes), and add every sample request to `API/EventConnectAPI/EventConnectAPI.http`.
+- Verify each acceptance criterion, tick it off in the file, and update the Status/API/UI lines there and in the README table.
+- If the implementation has to differ from the requirements, update the file and say why.
+
 ## Commands
 
 Run from inside each project folder.
