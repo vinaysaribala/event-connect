@@ -46,6 +46,7 @@ Run from inside each project folder.
 ## Conventions
 
 - UI: TypeScript only; function components and hooks; keep components in `src/`.
+- UI components: PrimeReact **v10** (MIT) with PrimeIcons and the default `lara-light-cyan` theme, imported in `src/main.tsx` under `PrimeReactProvider`. Don't upgrade to v11: it needs a commercial PrimeUI license key and is unstyled. Use PrimeReact components and theme CSS variables (`var(--primary-color)`, `var(--surface-ground)`, etc.) rather than custom CSS; `src/index.css` holds only base page styles.
 - API: one controller per resource in `Controllers/`, route `api/[controller]`; nullable reference types are enabled — don't suppress warnings.
 - New feature = entity in Core (+ `DbSet` in the DbContext and a migration), view models + interface + service in Service (register in its `DependencyInjection.cs`), thin controller in API. `Events` is the reference example.
 - `System.Security.Cryptography.Pkcs` is pinned in `EventConnectCore.csproj` to override a vulnerable version pulled in by `Microsoft.Data.SqlClient`; drop the pin once SqlClient ships a fixed dependency.
