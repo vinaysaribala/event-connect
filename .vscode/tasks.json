@@ -32,10 +32,23 @@
       "problemMatcher": []
     },
     {
+      "label": "ui: ensure dependencies",
+      "type": "process",
+      "command": "node",
+      "args": [
+        "-e",
+        "const fs = require('fs'); if (fs.existsSync('node_modules/.bin/vite')) { console.log('UI dependencies already installed.'); } else { console.log('UI dependencies missing, running npm install...'); require('child_process').execSync('npm install', { stdio: 'inherit' }); }"
+      ],
+      "options": { "cwd": "${workspaceFolder}/UI" },
+      "presentation": { "reveal": "silent" },
+      "problemMatcher": []
+    },
+    {
       "label": "ui: dev",
       "type": "npm",
       "script": "dev",
       "path": "UI",
+      "dependsOn": "ui: ensure dependencies",
       "isBackground": true,
       "problemMatcher": {
         "owner": "vite",
@@ -52,6 +65,7 @@
       "type": "npm",
       "script": "build",
       "path": "UI",
+      "dependsOn": "ui: ensure dependencies",
       "group": "build",
       "problemMatcher": ["$tsc"]
     },
@@ -60,6 +74,7 @@
       "type": "npm",
       "script": "lint",
       "path": "UI",
+      "dependsOn": "ui: ensure dependencies",
       "problemMatcher": []
     },
     {
