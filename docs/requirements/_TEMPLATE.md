@@ -1,8 +1,11 @@
 # Feature: <Name>
 
 **Status:** Draft <!-- Draft | Ready | In progress | Done -->
-**API:** Not started <!-- Not started | In progress | Done -->
-**UI:** Not started <!-- Not started | In progress | Done -->
+**Release:** MVP <!-- MVP | Phase 2 -->
+**API:** Not started <!-- Not started | Partial | In progress | Done -->
+**UI:** Not started <!-- Not started | Partial | In progress | Done -->
+**Source:** <!-- FRD section and IDs, e.g. [FRD §8](../functional-requirements.md#8-rsvp-and-attendance), BR-03 -->
+**Depends on:** <!-- other feature files that must be built first -->
 
 <!--
 How to use:
@@ -22,8 +25,11 @@ One or two sentences: what this feature does and who it is for.
 
 ## Functional requirements
 
-- **FR-1:** <rule the system must follow>
-- **FR-2:**
+Use the FRD's IDs. Put detail as sub-bullets under the FR it belongs to.
+
+- **FR-0xx** <requirement as written in the FRD>
+  - <detailed rule>
+- **FR-0yy**
 
 ## Data
 
@@ -71,6 +77,10 @@ One subsection per screen.
 Checked off once verified.
 
 - [ ] <Given / when / then, or a concrete example>
+
+## Later (Phase 2)
+
+- <FRD Phase 2 items for this area; not built until asked for>
 
 ## Out of scope
 

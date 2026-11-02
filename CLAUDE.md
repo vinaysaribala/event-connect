@@ -13,9 +13,11 @@ Digital invitations, event management and RSVP platform. Monorepo with a React f
 
 ## Requirements
 
-Feature requirements live in `docs/requirements/` (index: `README.md`, template: `_TEMPLATE.md`). When implementing a feature:
+The product is defined in `docs/functional-requirements.md` (the FRD, master copy). It is broken into one file per feature in `docs/requirements/` (index and build order: `README.md`; template: `_TEMPLATE.md`). Requirement IDs (FR-xxx, BR-xx, AC-xx) are shared between them. When implementing a feature:
 
 - Read its requirements file first and build exactly what it specifies; ask about anything marked TBD or listed under Open questions rather than guessing.
+- Only implement files whose Status is Ready, unless told otherwise. Build MVP items only; anything under "Later (Phase 2)" waits until asked.
+- Follow the FRD's business rules (§11) and non-functional targets (§16) even when a feature file doesn't repeat them.
 - Match the API request/response samples exactly (field names, status codes), and add every sample request to `API/EventConnectAPI/EventConnectAPI.http`.
 - Verify each acceptance criterion, tick it off in the file, and update the Status/API/UI lines there and in the README table.
 - If the implementation has to differ from the requirements, update the file and say why.
