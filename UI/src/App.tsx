@@ -1,30 +1,33 @@
-import { Button } from 'primereact/button'
-import { Card } from 'primereact/card'
-import { Menubar } from 'primereact/menubar'
-import type { MenuItem } from 'primereact/menuitem'
-
-const menuItems: MenuItem[] = [
-  { label: 'Dashboard', icon: 'pi pi-home' },
-  { label: 'Events', icon: 'pi pi-calendar' },
-  { label: 'Templates', icon: 'pi pi-palette' },
-]
+import { Navigate, Route, Routes } from 'react-router'
+import { AuthProvider } from './auth/AuthProvider'
+import { RequireAuth } from './auth/RequireAuth'
+import { Layout } from './components/Layout'
+import { DashboardPage } from './pages/DashboardPage'
+import { ForgotPasswordPage } from './pages/ForgotPasswordPage'
+import { HomePage } from './pages/HomePage'
+import { LoginPage } from './pages/LoginPage'
+import { ProfilePage } from './pages/ProfilePage'
+import { RegisterPage } from './pages/RegisterPage'
+import { ResetPasswordPage } from './pages/ResetPasswordPage'
+import { VerifyEmailPage } from './pages/VerifyEmailPage'
 
 function App() {
   return (
-    <>
-      <Menubar
-        model={menuItems}
-        start={<span style={{ fontWeight: 700, fontSize: '1.25rem', marginRight: '1.5rem' }}>EventConnect</span>}
-        end={<Button label="Sign in" icon="pi pi-sign-in" text />}
-        style={{ borderRadius: 0 }}
-      />
-      <main style={{ maxWidth: 960, margin: '0 auto', padding: '2rem 1rem' }}>
-        <Card title="Welcome to EventConnect" subTitle="Digital invitations, event management and RSVPs">
-          <p style={{ marginTop: 0 }}>Create an event, design its invitation, invite your guests and track who's coming.</p>
-          <Button label="Create event" icon="pi pi-plus" />
-        </Card>
-      </main>
-    </>
+    <AuthProvider>
+      <Routes>
+        <Route element={<Layout />}>
+          <Route index element={<HomePage />} />
+          <Route path="register" element={<RegisterPage />} />
+          <Route path="verify-email" element={<VerifyEmailPage />} />
+          <Route path="login" element={<LoginPage />} />
+          <Route path="forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="reset-password" element={<ResetPasswordPage />} />
+          <Route path="dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
+          <Route path="profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+          <Route path="*" element={<Navigate to="/" replace />} />
+        </Route>
+      </Routes>
+    </AuthProvider>
   )
 }
 

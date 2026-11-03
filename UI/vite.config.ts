@@ -4,4 +4,10 @@ import { defineConfig } from 'vite'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
+  server: {
+    // Same origin in dev: the browser only talks to :5173, which forwards /api to the API.
+    proxy: {
+      '/api': 'http://localhost:5207',
+    },
+  },
 })

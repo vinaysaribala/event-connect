@@ -22,3 +22,62 @@ Content-Type: application/json
 }
 
 ###
+
+# Accounts (docs/requirements/01-accounts.md).
+# REST Client keeps the session cookie between requests: run register or login first, then the signed-in requests.
+# Verify and reset tokens come from the emailed link (or the API log when SMTP isn't configured).
+
+POST {{EventConnectAPI_HostAddress}}/api/auth/register
+Content-Type: application/json
+
+{ "email": "maria@example.com", "password": "correct-horse-42", "displayName": "Maria Lopez" }
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/auth/verify-email
+Content-Type: application/json
+
+{ "token": "<token from email link>" }
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/auth/resend-verification
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/auth/login
+Content-Type: application/json
+
+{ "email": "maria@example.com", "password": "correct-horse-42" }
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/auth/logout
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/auth/forgot-password
+Content-Type: application/json
+
+{ "email": "maria@example.com" }
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/auth/reset-password
+Content-Type: application/json
+
+{ "token": "<token from email link>", "newPassword": "another-strong-pass" }
+
+###
+
+GET {{EventConnectAPI_HostAddress}}/api/me
+Accept: application/json
+
+###
+
+PUT {{EventConnectAPI_HostAddress}}/api/me
+Content-Type: application/json
+
+{ "displayName": "Maria L.", "timeZone": "America/Chicago" }
+
+###
