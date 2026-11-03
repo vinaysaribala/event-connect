@@ -10,6 +10,22 @@
       "problemMatcher": "$msCompile"
     },
     {
+      "label": "api: build tests",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["build", "${workspaceFolder}/API/EventConnect.Tests", "/property:GenerateFullPaths=true", "/consoleloggerparameters:NoSummary"],
+      "problemMatcher": "$msCompile"
+    },
+    {
+      "label": "api: test",
+      "type": "process",
+      "command": "dotnet",
+      "args": ["test", "--solution", "EventConnect.slnx"],
+      "options": { "cwd": "${workspaceFolder}/API" },
+      "group": "test",
+      "problemMatcher": "$msCompile"
+    },
+    {
       "label": "api: watch",
       "type": "process",
       "command": "dotnet",
@@ -75,6 +91,22 @@
       "script": "lint",
       "path": "UI",
       "dependsOn": "ui: ensure dependencies",
+      "problemMatcher": []
+    },
+    {
+      "label": "ui: test",
+      "type": "npm",
+      "script": "test",
+      "path": "UI",
+      "dependsOn": "ui: ensure dependencies",
+      "group": "test",
+      "problemMatcher": []
+    },
+    {
+      "label": "test: all",
+      "dependsOn": ["api: test", "ui: test"],
+      "dependsOrder": "sequence",
+      "group": { "kind": "test", "isDefault": true },
       "problemMatcher": []
     },
     {

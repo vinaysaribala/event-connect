@@ -170,7 +170,7 @@ Organizers register, verify their email and sign in. Every event is owned by its
 
 - [x] Registering with a new email returns 201 and sends a verification email.
 - [x] Registering the same email again (any letter case) returns 409.
-- [x] A verification link works once; a second use or one older than 24 hours returns 400. (Single use tested; the 24-hour limit is the token lifespan setting and was not tested by waiting.)
+- [x] A verification link works once; a second use or one older than 24 hours returns 400. (Automated tests cover single use, expiry (with the lifespan set to zero, since Identity reads the system clock) and that the configured lifespans are 24 hours for verification and 1 hour for reset.)
 - [x] Wrong password and unknown email both return the same 401 message.
 - [x] Forgot-password returns 202 for both known and unknown emails; only a known email receives a reset email.
 - [x] A reset link works once and changes the password; the old password no longer signs in.
@@ -179,6 +179,8 @@ Organizers register, verify their email and sign in. Every event is owned by its
 - [x] Registering with the `Admin:SeedEmail` address gives the user the `Administrator` role.
 - [ ] Verification and reset emails arrive in a real inbox through Gmail SMTP. With no SMTP settings, the email and its link are logged instead and the request still succeeds. (Logging fallback verified. Gmail delivery not yet verified: set the user secrets listed under Decisions → Email, then register with a real address.)
 - [x] UI: register → verify (via the emailed link) → sign in → edit profile → sign out works end to end in the browser; protected pages redirect to `/login` when signed out; the unverified banner shows until the email is verified.
+
+Automated tests (added 2026-11-03) cover every criterion above except real Gmail delivery: `API/EventConnect.Tests` (service layer and HTTP contract) and `UI/src/**/*.test.ts(x)` (each screen, `AuthProvider`, `RequireAuth`, `apiFetch`).
 
 Ownership checks on events (unverified users can't publish; another organizer's event returns 404) are acceptance criteria of [02 Events](02-events.md).
 

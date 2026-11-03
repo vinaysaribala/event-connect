@@ -36,6 +36,72 @@
       "postDebugTask": "ui: stop dev server",
       "url": "http://localhost:5173",
       "webRoot": "${workspaceFolder}/UI"
+    },
+    {
+      "name": "Tests: API (.NET)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "api: build tests",
+      "program": "${workspaceFolder}/API/EventConnect.Tests/bin/Debug/net10.0/EventConnect.Tests.dll",
+      "args": [],
+      "cwd": "${workspaceFolder}/API/EventConnect.Tests",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "Tests: API current file (.NET)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "api: build tests",
+      "program": "${workspaceFolder}/API/EventConnect.Tests/bin/Debug/net10.0/EventConnect.Tests.dll",
+      "args": ["-class", "*.${fileBasenameNoExtension}"],
+      "cwd": "${workspaceFolder}/API/EventConnect.Tests",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "Tests: API by method name (.NET)",
+      "type": "coreclr",
+      "request": "launch",
+      "preLaunchTask": "api: build tests",
+      "program": "${workspaceFolder}/API/EventConnect.Tests/bin/Debug/net10.0/EventConnect.Tests.dll",
+      "args": ["-method", "*${input:apiTestMethod}*"],
+      "cwd": "${workspaceFolder}/API/EventConnect.Tests",
+      "console": "integratedTerminal",
+      "stopAtEntry": false
+    },
+    {
+      "name": "Tests: UI (Vitest)",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "ui: ensure dependencies",
+      "program": "${workspaceFolder}/UI/node_modules/vitest/vitest.mjs",
+      "args": ["run", "--no-file-parallelism"],
+      "cwd": "${workspaceFolder}/UI",
+      "autoAttachChildProcesses": true,
+      "smartStep": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "console": "integratedTerminal"
+    },
+    {
+      "name": "Tests: UI current file (Vitest)",
+      "type": "node",
+      "request": "launch",
+      "preLaunchTask": "ui: ensure dependencies",
+      "program": "${workspaceFolder}/UI/node_modules/vitest/vitest.mjs",
+      "args": ["run", "${fileBasename}"],
+      "cwd": "${workspaceFolder}/UI",
+      "autoAttachChildProcesses": true,
+      "smartStep": true,
+      "skipFiles": ["<node_internals>/**", "**/node_modules/**"],
+      "console": "integratedTerminal"
+    }
+  ],
+  "inputs": [
+    {
+      "id": "apiTestMethod",
+      "type": "promptString",
+      "description": "Part of the test method name to run (matches *name*)"
     }
   ],
   "compounds": [
