@@ -23,7 +23,7 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
         }
 
         var timeZone = model.TimeZone.Trim();
-        if (!IsIanaTimeZone(timeZone))
+        if (!TimeZones.IsIana(timeZone))
         {
             return ServiceResult.Invalid("TimeZone", "Unknown time zone. Use an IANA name such as America/New_York.");
         }
@@ -35,8 +35,4 @@ public class ProfileService(UserManager<User> userManager) : IProfileService
 
         return await userManager.ToProfileViewModelAsync(user);
     }
-
-    // Accepts IANA ids (America/Chicago) and rejects Windows ids (Central Standard Time).
-    private static bool IsIanaTimeZone(string id) =>
-        TimeZoneInfo.TryFindSystemTimeZoneById(id, out var zone) && zone.HasIanaId;
 }

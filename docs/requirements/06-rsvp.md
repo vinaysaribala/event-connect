@@ -31,6 +31,7 @@ A guest opens their personal link without signing in, sees the invitation, and a
   - Comment: optional, max 500 characters.
   - Custom questions: types `ShortText` (max 200), `LongText` (max 1,000), `SingleChoice`, `MultiChoice`. Each can be marked required, and required questions only apply to `Yes` answers. Max 10 questions per event.
   - Questions can't be deleted once answered; they can be hidden instead.
+  - Duplicating an event ([02](02-events.md)) copies its questions, including hidden ones, with no answers.
 - **FR-030** Validate token, deadline, eligibility and capacity. Checks run in this order and the first failure is returned:
   1. The token exists and isn't revoked; otherwise 404 "This invitation link is no longer valid" (AC-06).
   2. The event isn't `Cancelled` or `Archived` (AC-07).

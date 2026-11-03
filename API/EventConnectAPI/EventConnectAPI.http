@@ -1,28 +1,5 @@
 @EventConnectAPI_HostAddress = http://localhost:5207
 
-GET {{EventConnectAPI_HostAddress}}/api/events
-Accept: application/json
-
-###
-
-GET {{EventConnectAPI_HostAddress}}/api/events/1
-Accept: application/json
-
-###
-
-POST {{EventConnectAPI_HostAddress}}/api/events
-Content-Type: application/json
-
-{
-  "title": "Launch party",
-  "description": "EventConnect kickoff",
-  "location": "Main hall",
-  "startsAt": "2026-12-01T18:00:00",
-  "endsAt": "2026-12-01T21:00:00"
-}
-
-###
-
 # Accounts (docs/requirements/01-accounts.md).
 # REST Client keeps the session cookie between requests: run register or login first, then the signed-in requests.
 # Verify and reset tokens come from the emailed link (or the API log when SMTP isn't configured).
@@ -79,5 +56,104 @@ PUT {{EventConnectAPI_HostAddress}}/api/me
 Content-Type: application/json
 
 { "displayName": "Maria L.", "timeZone": "America/Chicago" }
+
+###
+
+# Events (docs/requirements/02-events.md). Sign in first (register or login above).
+# Publishing needs a verified email. Replace 1 with the id returned by the create request.
+
+GET {{EventConnectAPI_HostAddress}}/api/categories
+Accept: application/json
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/events
+Content-Type: application/json
+
+{ "title": "Maya's 30th Birthday" }
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/events
+Content-Type: application/json
+
+{
+  "title": "Maya's 30th Birthday",
+  "description": "Dinner and drinks on the rooftop.",
+  "categoryId": 1,
+  "format": "Physical",
+  "startsAt": "2026-12-05T19:00:00",
+  "endsAt": "2026-12-05T23:00:00",
+  "timeZone": "America/New_York",
+  "venueName": "Skyline Rooftop",
+  "address": "123 Main St, New York, NY 10001",
+  "rsvpDeadline": "2026-11-28T23:59:00",
+  "capacity": 40,
+  "allowPlusOnes": true,
+  "defaultMaxPlusOnes": 1,
+  "visibility": "Private"
+}
+
+###
+
+GET {{EventConnectAPI_HostAddress}}/api/events
+Accept: application/json
+
+###
+
+GET {{EventConnectAPI_HostAddress}}/api/events?status=Draft&when=upcoming&search=birthday
+Accept: application/json
+
+###
+
+GET {{EventConnectAPI_HostAddress}}/api/events/1
+Accept: application/json
+
+###
+
+PUT {{EventConnectAPI_HostAddress}}/api/events/1
+Content-Type: application/json
+
+{
+  "title": "Maya's 30th Birthday",
+  "description": "Dinner and drinks on the rooftop.",
+  "categoryId": 1,
+  "format": "Physical",
+  "startsAt": "2026-12-05T20:00:00",
+  "endsAt": "2026-12-05T23:00:00",
+  "timeZone": "America/New_York",
+  "venueName": "Skyline Rooftop",
+  "address": "123 Main St, New York, NY 10001",
+  "rsvpDeadline": "2026-11-28T23:59:00",
+  "capacity": 40,
+  "allowPlusOnes": true,
+  "defaultMaxPlusOnes": 1,
+  "visibility": "Private",
+  "notifyGuests": true,
+  "changeMessage": "We moved to 8pm, see you there!"
+}
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/events/1/publish
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/events/1/cancel
+Content-Type: application/json
+
+{ "message": "Sorry, we have to call this off because of the storm." }
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/events/1/archive
+
+###
+
+POST {{EventConnectAPI_HostAddress}}/api/events/1/duplicate
+
+###
+
+DELETE {{EventConnectAPI_HostAddress}}/api/events/1
 
 ###

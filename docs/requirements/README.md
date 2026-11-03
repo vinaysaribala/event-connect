@@ -9,7 +9,7 @@ Listed in build order: each feature depends only on the ones above it.
 | # | Feature | FRD | Release | Status | API | UI |
 |---|---|---|---|---|---|---|
 | 01 | [Accounts and Access](01-accounts.md) | §3 · FR-001–005 | MVP | In progress | Done | Done |
-| 02 | [Event Lifecycle](02-events.md) | §4 · FR-006–011 | MVP | Draft | Partial | Not started |
+| 02 | [Event Lifecycle](02-events.md) | §4 · FR-006–011 | MVP | Done | Done | Done |
 | 03 | [Invitation Design](03-invitation-design.md) | §5 · FR-012–016 | MVP | Draft | Not started | Not started |
 | 04 | [Guest Lists](04-guest-lists.md) | §6 · FR-017–021 | MVP | Draft | Not started | Not started |
 | 05 | [Invitation Delivery](05-invitation-delivery.md) | §7 · FR-022–027 | MVP | Draft | Not started | Not started |

@@ -34,13 +34,14 @@ Anyone can browse invitation templates. An organizer picks one for an event and 
 - **FR-015** Save a stable version of the published invitation.
   - Publishing the event ([02](02-events.md)) saves design version 1.
   - Design edits after publishing stay as a working copy until the organizer clicks "Update invitation", which saves version N+1.
+  - Duplicating an event ([02](02-events.md)) copies its current working copy as the new draft's design.
   - Guests always see the latest saved version. Versions are never changed after saving.
 
 ## Data
 
 | Entity | Field | Type | Rules |
 |---|---|---|---|
-| TemplateCategory | Id, Name, Slug, SortOrder | | managed by admins ([09](09-administration.md)) |
+| Category | Id, Name, Slug, SortOrder, IsActive | | shared with events, defined in [02](02-events.md); managed by admins ([09](09-administration.md)) |
 | Template | Id | int | key |
 | | Name | string | required, max 100 |
 | | CategoryId | int | FK |
@@ -97,9 +98,9 @@ Query: `search`, `categoryId`, `page` (default 1).
 - **200 OK** — list item fields plus `"definition"` (shape above)
 - **404** — unknown or inactive
 
-### `GET /api/template-categories` (no sign-in)
+### Categories
 
-- **200 OK** — `[{ "id": 3, "name": "Birthday", "slug": "birthday" }]`
+Use `GET /api/categories` from [02](02-events.md). Events and templates share one category list.
 
 ### `GET /api/events/{id}/design` — working copy
 
