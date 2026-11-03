@@ -1,4 +1,5 @@
 <Solution>
+  <Project Path="EventConnect.Tests/EventConnect.Tests.csproj" />
   <Project Path="EventConnectAPI/EventConnectAPI.csproj" />
   <Project Path="EventConnectCore/EventConnectCore.csproj" />
   <Project Path="EventConnectService/EventConnectService.csproj" />

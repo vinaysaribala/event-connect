@@ -1,13 +1,15 @@
 # Feature: Accounts and Access
 
-**Status:** Ready
+**Status:** In progress
 **Release:** MVP (social sign-in is Phase 2)
-**API:** Not started
-**UI:** Not started
+**API:** Done
+**UI:** Done
 **Source:** [FRD §3](../functional-requirements.md#3-accounts-and-access), BR-01, BR-07, BR-09
 **Depends on:** nothing (build first)
 
 > Reviewed and marked Ready on 2026-11-02. The detail added beyond the FRD (limits, expiry times, endpoints, status codes) is accepted as written; see Decisions.
+>
+> Implemented on 2026-11-02. Every acceptance criterion is verified except Gmail delivery, which needs SMTP user secrets (see Acceptance criteria). Where the build adds to or differs from this file, it is recorded under Decisions → Implementation notes.
 
 ## Summary
 
@@ -64,7 +66,7 @@ Organizers register, verify their email and sign in. Every event is owned by its
 { "email": "maria@example.com", "password": "correct-horse-42", "displayName": "Maria Lopez" }
 ```
 
-- **201 Created**
+- **201 Created** — also signs the new user in (sets the session cookie)
 
   ```json
   { "id": 7, "email": "maria@example.com", "displayName": "Maria Lopez", "emailVerified": false }
@@ -166,17 +168,19 @@ Organizers register, verify their email and sign in. Every event is owned by its
 
 ## Acceptance criteria
 
-- [ ] Registering with a new email returns 201 and sends a verification email.
-- [ ] Registering the same email again (any letter case) returns 409.
-- [ ] A verification link works once; a second use or one older than 24 hours returns 400.
-- [ ] Wrong password and unknown email both return the same 401 message.
-- [ ] Forgot-password returns 202 for both known and unknown emails; only a known email receives a reset email.
-- [ ] A reset link works once and changes the password; the old password no longer signs in.
-- [ ] Signed-out requests to `GET /api/me` and `PUT /api/me` return 401, not a redirect.
-- [ ] After login, `GET /api/me` returns the user; after logout it returns 401.
-- [ ] Registering with the `Admin:SeedEmail` address gives the user the `Administrator` role.
-- [ ] Verification and reset emails arrive in a real inbox through Gmail SMTP. With no SMTP settings, the email and its link are logged instead and the request still succeeds.
-- [ ] UI: register → verify (via the emailed link) → sign in → edit profile → sign out works end to end in the browser; protected pages redirect to `/login` when signed out; the unverified banner shows until the email is verified.
+- [x] Registering with a new email returns 201 and sends a verification email.
+- [x] Registering the same email again (any letter case) returns 409.
+- [x] A verification link works once; a second use or one older than 24 hours returns 400. (Automated tests cover single use, expiry (with the lifespan set to zero, since Identity reads the system clock) and that the configured lifespans are 24 hours for verification and 1 hour for reset.)
+- [x] Wrong password and unknown email both return the same 401 message.
+- [x] Forgot-password returns 202 for both known and unknown emails; only a known email receives a reset email.
+- [x] A reset link works once and changes the password; the old password no longer signs in.
+- [x] Signed-out requests to `GET /api/me` and `PUT /api/me` return 401, not a redirect.
+- [x] After login, `GET /api/me` returns the user; after logout it returns 401.
+- [x] Registering with the `Admin:SeedEmail` address gives the user the `Administrator` role.
+- [ ] Verification and reset emails arrive in a real inbox through Gmail SMTP. With no SMTP settings, the email and its link are logged instead and the request still succeeds. (Logging fallback verified. Gmail delivery not yet verified: set the user secrets listed under Decisions → Email, then register with a real address.)
+- [x] UI: register → verify (via the emailed link) → sign in → edit profile → sign out works end to end in the browser; protected pages redirect to `/login` when signed out; the unverified banner shows until the email is verified.
+
+Automated tests (added 2026-11-03) cover every criterion above except real Gmail delivery: `API/EventConnect.Tests` (service layer and HTTP contract) and `UI/src/**/*.test.ts(x)` (each screen, `AuthProvider`, `RequireAuth`, `apiFetch`).
 
 Ownership checks on events (unverified users can't publish; another organizer's event returns 404) are acceptance criteria of [02 Events](02-events.md).
 
@@ -240,6 +244,19 @@ Ownership checks on events (unverified users can't publish; another organizer's 
 ### Account deletion and data export (decided 2026-11-02)
 
 - Not in this feature; moved to Later (Phase 2).
+
+### Implementation notes (2026-11-02)
+
+Added or decided while building; none of these change the samples above.
+
+- **Register signs in.** `POST /api/auth/register` sets the session cookie, as the Register screen requires.
+- **Default time zone.** The register request has no time zone, so new accounts start on `UTC` until the user changes it in their profile. Time zones are validated as IANA ids (Windows ids such as `Eastern Standard Time` are rejected).
+- **Error bodies** are RFC 9457 problem details. Validation errors (400) list fields under `errors` with ASP.NET Core's PascalCase keys, e.g. `errors.Email`, `errors.Token`, `errors.NewPassword`. The 401 from login and the 409 from register carry their message in `title`.
+- **Link tokens.** The `token` in email links is opaque: it packs the user id and an ASP.NET Core Identity token. Verification tokens last 24 hours, reset tokens 1 hour. Resetting a password also invalidates any verification links still outstanding (Identity's security stamp changes).
+- **Abuse protection** (FRD §16): `/api/auth/*` is limited to 20 requests per minute per IP (429 when exceeded), and an account locks for 5 minutes after 5 wrong passwords. A locked account still gets the same generic 401.
+- **Email delivery** goes through an in-memory background queue in front of `IEmailSender`, so requests never wait on SMTP and forgot-password takes the same time whether or not the email exists. Queued emails are lost if the API stops before sending them; a durable queue comes with [05](05-invitation-delivery.md).
+- **Session length.** Sign-in uses a browser-session cookie (no "remember me"), valid for up to 14 days with sliding renewal.
+- **UI.** The unverified banner links to the profile, where "Resend" is. "Send a new link" on the verify page needs a session, so a signed-out user is sent to sign in and then to the profile. The password strength hint is shown as text under the field.
 
 ## Open questions
 

@@ -31,6 +31,7 @@ Run from inside each project folder.
 - Dev server: `npm run dev` (http://localhost:5173)
 - Build (type-check + bundle): `npm run build`
 - Lint: `npm run lint` (oxlint, config in `.oxlintrc.json`)
+- Test: `npm test` (Vitest + Testing Library, jsdom; `npm run test:watch` to watch). Tests sit next to the code as `*.test.ts(x)`; shared helpers (`renderWithAuth`, `stubFetch`, `reply`) are in `src/test/utils.tsx`.
 
 **API (`API/`)**
 - Build: `dotnet build EventConnect.slnx`
@@ -42,6 +43,7 @@ Run from inside each project folder.
 - API reference and try-it UI (Scalar, Development only): http://localhost:5207/scalar
 - OpenAPI document (Development only): `/openapi/v1.json`
 - Sample requests: `EventConnectAPI/EventConnectAPI.http`
+- Test: `dotnet test --solution EventConnect.slnx` (xUnit v3 project `EventConnect.Tests` on Microsoft.Testing.Platform, opted in by the root `global.json`; no SQL Server or SMTP needed). One class: `dotnet test --project EventConnect.Tests --filter-class "*.AuthServiceTests"`. VS Code: "Tests: API …" launch configs debug the tests, `test: all` task runs both suites. `Services/` tests the service layer with real Identity on in-memory SQLite (`Support/ServiceTestHost`); `Api/` tests the HTTP contract through the real pipeline (`Support/ApiFactory`, a `WebApplicationFactory`). Both capture emails in `FakeEmailQueue`. If a running API locks the build output, add `--artifacts-path <temp dir>`.
 
 ## Conventions
 
@@ -50,6 +52,6 @@ Run from inside each project folder.
 - API: one controller per resource in `Controllers/`, route `api/[controller]`; nullable reference types are enabled — don't suppress warnings.
 - New feature = entity in Core (+ `DbSet` in the DbContext and a migration), view models + interface + service in Service (register in its `DependencyInjection.cs`), thin controller in API. `Events` is the reference example.
 - `System.Security.Cryptography.Pkcs` is pinned in `EventConnectCore.csproj` to override a vulnerable version pulled in by `Microsoft.Data.SqlClient`; drop the pin once SqlClient ships a fixed dependency.
-- UI → API: always relative URLs (`/api/...`). In dev, Vite proxies `/api` to http://localhost:5207 (`server.proxy` in `UI/vite.config.ts`; add it when first needed). Don't add CORS; UI and API stay same-origin in production too.
-- Auth/sessions: HTTP-only cookie from ASP.NET Core Identity; API returns 401 (no login redirects). The UI never stores tokens; an `AuthProvider` context loads the user from `GET /api/me`. Full decision: `docs/requirements/01-accounts.md` → Decisions.
-- Before finishing a change, build the project(s) you touched (`npm run build` / `dotnet build EventConnect.slnx`).
+- UI → API: always relative URLs (`/api/...`). In dev, Vite proxies `/api` to http://localhost:5207 (`server.proxy` in `UI/vite.config.ts`). Don't add CORS; UI and API stay same-origin in production too.
+- Auth/sessions: HTTP-only cookie from ASP.NET Core Identity; API returns 401 (no login redirects). The UI never stores tokens; an `AuthProvider` context (`UI/src/auth/`) loads the user from `GET /api/me`, and all requests go through `apiFetch` in `UI/src/api.ts`. Wrap sign-in-only routes in `RequireAuth`. Full decision: `docs/requirements/01-accounts.md` → Decisions.
+- Before finishing a change, build and test the project(s) you touched (`npm run build` + `npm test` / `dotnet build EventConnect.slnx` + `dotnet test --solution EventConnect.slnx`). New behaviour gets tests at the same levels as the accounts feature.
