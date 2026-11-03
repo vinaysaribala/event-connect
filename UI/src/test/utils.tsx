@@ -34,6 +34,26 @@ export function stubFetch(...replies: Response[]): Mock<typeof fetch> {
   return fetchMock
 }
 
+/**
+ * Replaces fetch with replies chosen by request, keyed "METHOD /path" (e.g. "GET /api/events/12"). A list gives
+ * successive replies to the same request, repeating the last. Unmatched requests get 404. Suits pages that load
+ * several things at once, or load twice under StrictMode.
+ */
+export function routeFetch(routes: Record<string, Response | Response[]>): Mock<typeof fetch> {
+  const calls = new Map<string, number>()
+  const fetchMock = vi.fn<typeof fetch>(async (url, init) => {
+    const key = `${init?.method ?? 'GET'} ${String(url)}`
+    const route = routes[key]
+    if (!route) return reply(404)
+    const replies = Array.isArray(route) ? route : [route]
+    const index = calls.get(key) ?? 0
+    calls.set(key, index + 1)
+    return replies[Math.min(index, replies.length - 1)].clone()
+  })
+  vi.stubGlobal('fetch', fetchMock)
+  return fetchMock
+}
+
 /** The [url, method, parsed body] of each fetch call. */
 export function fetchCalls(fetchMock: Mock<typeof fetch>): [string, string | undefined, unknown][] {
   return fetchMock.mock.calls.map(([url, init]) => [String(url), init?.method, init?.body ? JSON.parse(String(init.body)) : undefined])
@@ -65,9 +85,13 @@ function LocationProbe() {
 /**
  * Renders `ui` at `entry` with the given auth state, under StrictMode as in main.tsx (React only runs effects
  * twice when StrictMode wraps the root). Navigating anywhere else renders a probe; read it with `currentLocation()`.
+ * Pass `path` (e.g. `/events/:id`) when the page reads route params; it defaults to the entry's own path.
  */
-export function renderWithAuth(ui: ReactNode, { entry = '/', auth = fakeAuth() }: { entry?: InitialEntry; auth?: AuthContextValue } = {}) {
-  const path = (typeof entry === 'string' ? entry : (entry.pathname ?? '/')).split('?')[0]
+export function renderWithAuth(
+  ui: ReactNode,
+  { entry = '/', auth = fakeAuth(), path }: { entry?: InitialEntry; auth?: AuthContextValue; path?: string } = {},
+) {
+  path ??= (typeof entry === 'string' ? entry : (entry.pathname ?? '/')).split('?')[0]
   const result = render(
     <StrictMode>
       <AuthContext value={auth}>

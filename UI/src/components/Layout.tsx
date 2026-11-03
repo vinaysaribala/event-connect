@@ -11,7 +11,7 @@ export function Layout() {
 
   const menuItems: MenuItem[] = [
     { label: 'Dashboard', icon: 'pi pi-home', command: () => navigate('/dashboard') },
-    { label: 'Events', icon: 'pi pi-calendar' },
+    { label: 'New event', icon: 'pi pi-calendar-plus', command: () => navigate('/events/new') },
     { label: 'Templates', icon: 'pi pi-palette' },
   ]
 

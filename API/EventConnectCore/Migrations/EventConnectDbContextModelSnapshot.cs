@@ -22,6 +22,96 @@ namespace EventConnectCore.Migrations
 
             SqlServerModelBuilderExtensions.UseIdentityColumns(modelBuilder);
 
+            modelBuilder.Entity("EventConnectCore.Models.Category", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int");
+
+                    SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<string>("Slug")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("nvarchar(100)");
+
+                    b.Property<int>("SortOrder")
+                        .HasColumnType("int");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("Slug")
+                        .IsUnique();
+
+                    b.ToTable("Categories");
+
+                    b.HasData(
+                        new
+                        {
+                            Id = 1,
+                            IsActive = true,
+                            Name = "Birthday",
+                            Slug = "birthday",
+                            SortOrder = 1
+                        },
+                        new
+                        {
+                            Id = 2,
+                            IsActive = true,
+                            Name = "Wedding",
+                            Slug = "wedding",
+                            SortOrder = 2
+                        },
+                        new
+                        {
+                            Id = 3,
+                            IsActive = true,
+                            Name = "Baby Shower",
+                            Slug = "baby-shower",
+                            SortOrder = 3
+                        },
+                        new
+                        {
+                            Id = 4,
+                            IsActive = true,
+                            Name = "Holiday",
+                            Slug = "holiday",
+                            SortOrder = 4
+                        },
+                        new
+                        {
+                            Id = 5,
+                            IsActive = true,
+                            Name = "Dinner Party",
+                            Slug = "dinner-party",
+                            SortOrder = 5
+                        },
+                        new
+                        {
+                            Id = 6,
+                            IsActive = true,
+                            Name = "Business",
+                            Slug = "business",
+                            SortOrder = 6
+                        },
+                        new
+                        {
+                            Id = 7,
+                            IsActive = true,
+                            Name = "Other",
+                            Slug = "other",
+                            SortOrder = 7
+                        });
+                });
+
             modelBuilder.Entity("EventConnectCore.Models.Event", b =>
                 {
                     b.Property<int>("Id")
@@ -30,28 +120,95 @@ namespace EventConnectCore.Migrations
 
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("Id"));
 
+                    b.Property<string>("Address")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<bool>("AllowPlusOnes")
+                        .HasColumnType("bit");
+
+                    b.Property<DateTime?>("ArchivedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("CancelledAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<int?>("Capacity")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("CategoryId")
+                        .HasColumnType("int");
+
                     b.Property<DateTime>("CreatedAt")
                         .HasColumnType("datetime2");
 
+                    b.Property<int>("DefaultMaxPlusOnes")
+                        .HasColumnType("int");
+
                     b.Property<string>("Description")
+                        .HasMaxLength(5000)
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<DateTime?>("EndsAt")
                         .HasColumnType("datetime2");
 
-                    b.Property<string>("Location")
-                        .HasMaxLength(300)
-                        .HasColumnType("nvarchar(300)");
+                    b.Property<string>("Format")
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
 
-                    b.Property<DateTime>("StartsAt")
+                    b.Property<int>("OrganizerId")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("PublishedAt")
                         .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RsvpDeadline")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("RsvpDeadlineUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StartsAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<DateTime?>("StartsAtUtc")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("Status")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
+                    b.Property<string>("TimeZone")
+                        .HasMaxLength(64)
+                        .HasColumnType("nvarchar(64)");
 
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasMaxLength(200)
                         .HasColumnType("nvarchar(200)");
 
+                    b.Property<DateTime>("UpdatedAt")
+                        .HasColumnType("datetime2");
+
+                    b.Property<string>("VenueName")
+                        .HasMaxLength(200)
+                        .HasColumnType("nvarchar(200)");
+
+                    b.Property<string>("VirtualUrl")
+                        .HasMaxLength(2000)
+                        .HasColumnType("nvarchar(2000)");
+
+                    b.Property<string>("Visibility")
+                        .IsRequired()
+                        .HasMaxLength(20)
+                        .HasColumnType("nvarchar(20)");
+
                     b.HasKey("Id");
+
+                    b.HasIndex("CategoryId");
+
+                    b.HasIndex("OrganizerId", "StartsAtUtc");
 
                     b.ToTable("Events");
                 });
@@ -291,6 +448,24 @@ namespace EventConnectCore.Migrations
                     b.HasKey("UserId", "LoginProvider", "Name");
 
                     b.ToTable("UserTokens", (string)null);
+                });
+
+            modelBuilder.Entity("EventConnectCore.Models.Event", b =>
+                {
+                    b.HasOne("EventConnectCore.Models.Category", "Category")
+                        .WithMany()
+                        .HasForeignKey("CategoryId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("EventConnectCore.Models.User", "Organizer")
+                        .WithMany()
+                        .HasForeignKey("OrganizerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Category");
+
+                    b.Navigation("Organizer");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<int>", b =>

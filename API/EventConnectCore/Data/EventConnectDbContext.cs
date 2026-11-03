@@ -9,6 +9,7 @@ public class EventConnectDbContext(DbContextOptions<EventConnectDbContext> optio
     : IdentityDbContext<User, IdentityRole<int>, int>(options)
 {
     public DbSet<Event> Events => Set<Event>();
+    public DbSet<Category> Categories => Set<Category>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -16,8 +17,33 @@ public class EventConnectDbContext(DbContextOptions<EventConnectDbContext> optio
 
         modelBuilder.Entity<Event>(entity =>
         {
+            entity.Property(e => e.Status).HasConversion<string>().HasMaxLength(20);
             entity.Property(e => e.Title).HasMaxLength(200);
-            entity.Property(e => e.Location).HasMaxLength(300);
+            entity.Property(e => e.Description).HasMaxLength(5000);
+            entity.Property(e => e.Format).HasConversion<string>().HasMaxLength(20);
+            entity.Property(e => e.TimeZone).HasMaxLength(64);
+            entity.Property(e => e.VenueName).HasMaxLength(200);
+            entity.Property(e => e.Address).HasMaxLength(500);
+            entity.Property(e => e.VirtualUrl).HasMaxLength(2000);
+            entity.Property(e => e.Visibility).HasConversion<string>().HasMaxLength(20);
+            entity.HasOne(e => e.Organizer).WithMany().HasForeignKey(e => e.OrganizerId);
+            entity.HasOne(e => e.Category).WithMany().HasForeignKey(e => e.CategoryId).OnDelete(DeleteBehavior.Restrict);
+            entity.HasIndex(e => new { e.OrganizerId, e.StartsAtUtc });
+        });
+
+        modelBuilder.Entity<Category>(entity =>
+        {
+            entity.Property(c => c.Name).HasMaxLength(100);
+            entity.Property(c => c.Slug).HasMaxLength(100);
+            entity.HasIndex(c => c.Slug).IsUnique();
+            entity.HasData(
+                new Category { Id = 1, Name = "Birthday", Slug = "birthday", SortOrder = 1 },
+                new Category { Id = 2, Name = "Wedding", Slug = "wedding", SortOrder = 2 },
+                new Category { Id = 3, Name = "Baby Shower", Slug = "baby-shower", SortOrder = 3 },
+                new Category { Id = 4, Name = "Holiday", Slug = "holiday", SortOrder = 4 },
+                new Category { Id = 5, Name = "Dinner Party", Slug = "dinner-party", SortOrder = 5 },
+                new Category { Id = 6, Name = "Business", Slug = "business", SortOrder = 6 },
+                new Category { Id = 7, Name = "Other", Slug = "other", SortOrder = 7 });
         });
 
         modelBuilder.Entity<User>(entity =>

@@ -76,6 +76,17 @@ public sealed class ServiceTestHost : IAsyncDisposable
 
     public Task<T> UsersAsync<T>(Func<UserManager<User>, Task<T>> action) => RunAsync(action);
 
+    public Task<T> EventsAsync<T>(Func<IEventService, Task<T>> action) => RunAsync(action);
+
+    public Task<T> CategoriesAsync<T>(Func<ICategoryService, Task<T>> action) => RunAsync(action);
+
+    /// <summary>Reads or changes the database directly, e.g. to check a stored column the API doesn't return.</summary>
+    public Task<T> DbAsync<T>(Func<EventConnectDbContext, Task<T>> action) => RunAsync(action);
+
+    /// <summary>Marks the user's email as verified, as following the verification link would.</summary>
+    public Task VerifyEmailAsync(int userId) => DbAsync(db => db.Users.Where(u => u.Id == userId)
+        .ExecuteUpdateAsync(u => u.SetProperty(x => x.EmailConfirmed, true)));
+
     public async Task<User> FindUserAsync(string email) =>
         await UsersAsync(users => users.FindByEmailAsync(email)) ?? throw new InvalidOperationException($"No user {email}.");
 

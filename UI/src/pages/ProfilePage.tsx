@@ -9,16 +9,9 @@ import type { CurrentUser } from '../auth/AuthContext'
 import { useAuth } from '../auth/useAuth'
 import { FormField } from '../components/FormField'
 import { FormPage } from '../components/FormPage'
+import { timeZoneOptions } from '../timeZones'
 
 type Notice = { severity: 'success' | 'error'; text: string }
-
-/** IANA time zones known to the browser, plus UTC and the user's current zone in case either is missing. */
-function timeZoneOptions(current: string): string[] {
-  const zones = new Set(Intl.supportedValuesOf('timeZone'))
-  zones.add('UTC')
-  zones.add(current)
-  return [...zones].sort()
-}
 
 export function ProfilePage() {
   const { user, updateUser } = useAuth()

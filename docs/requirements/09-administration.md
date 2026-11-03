@@ -54,7 +54,7 @@ An admin area for Administrators: managing invitation templates and categories, 
 | | CreatedAt | DateTime (UTC) | indexed |
 | UserRole | UserId, RoleId | | |
 
-Template and TemplateCategory are defined in [03](03-invitation-design.md).
+Template is defined in [03](03-invitation-design.md). Category is defined in [02](02-events.md) and shared by events and templates.
 
 ## API
 
@@ -63,7 +63,7 @@ All endpoints require the `Administrator` role (otherwise **403**).
 ### Templates and categories
 
 - `GET /api/admin/templates` (includes inactive), `POST /api/admin/templates`, `PUT /api/admin/templates/{id}`, `POST /api/admin/templates/{id}/deactivate`, `POST /api/admin/templates/{id}/activate`
-- The same pattern under `/api/admin/template-categories`
+- The same pattern under `/api/admin/categories`
 
 `POST /api/admin/templates`:
 

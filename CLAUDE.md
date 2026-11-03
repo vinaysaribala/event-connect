@@ -31,7 +31,7 @@ Run from inside each project folder.
 - Dev server: `npm run dev` (http://localhost:5173)
 - Build (type-check + bundle): `npm run build`
 - Lint: `npm run lint` (oxlint, config in `.oxlintrc.json`)
-- Test: `npm test` (Vitest + Testing Library, jsdom; `npm run test:watch` to watch). Tests sit next to the code as `*.test.ts(x)`; shared helpers (`renderWithAuth`, `stubFetch`, `reply`) are in `src/test/utils.tsx`.
+- Test: `npm test` (Vitest + Testing Library, jsdom; `npm run test:watch` to watch). Tests sit next to the code as `*.test.ts(x)`; shared helpers (`renderWithAuth`, `stubFetch`, `routeFetch`, `reply`) are in `src/test/utils.tsx`, sample events in `src/test/events.ts`.
 
 **API (`API/`)**
 - Build: `dotnet build EventConnect.slnx`

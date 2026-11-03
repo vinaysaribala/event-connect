@@ -52,6 +52,7 @@ public static class DependencyInjection
         services.AddHostedService<EmailDispatcher>();
 
         services.AddScoped<IEventService, EventService>();
+        services.AddScoped<ICategoryService, CategoryService>();
         services.AddScoped<IAuthService, AuthService>();
         services.AddScoped<IProfileService, ProfileService>();
         return services;
